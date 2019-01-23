@@ -16,14 +16,7 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_star_wars_people)
 
-        getMainController().loadCharacters()
-    }
-
-    fun getMainController(): MainController {
-        if(this.mainController == null){
-            this.mainController = MainController()
-        }
-        return this.mainController!!;
+        MainController.loadCharacters()
     }
 
     override fun onCharactersLoad(characters: List<Character>) {

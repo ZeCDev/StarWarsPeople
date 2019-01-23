@@ -5,7 +5,7 @@ import com.zecdev.starwarspeople.model.Vehicle
 import java.lang.Error
 
 /**
- * This abstract class have the events that can be
+ * This interface have the events that can be
  * happening on MainController.
  */
 interface MainControllerCallback {
