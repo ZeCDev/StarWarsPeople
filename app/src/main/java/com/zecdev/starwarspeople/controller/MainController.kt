@@ -1,18 +1,22 @@
 package com.zecdev.starwarspeople.controller
 import com.zecdev.starwarspeople.model.Character
+import com.zecdev.starwarspeople.model.ModelType
+import java.lang.Error
 
 /**
  * This class abstract the requests that will be
  * asked to the server.
  */
-class MainController : HttpRequestCallback {
+class MainController constructor(): HttpRequestCallback {
 
-    private var characters : List<Character>
+    private var characters : ArrayList<Character>
     private var httpRequest : HttpRequest
+    private var callback : MainControllerCallback? = null
+    private var characterPagination = 0;
 
     init {
         this.characters = ArrayList<Character>()
-        this.httpRequest = HttpRequest()
+        this.httpRequest = HttpRequest(this)
     }
 
     companion object {
@@ -26,7 +30,7 @@ class MainController : HttpRequestCallback {
          * called.
          */
         fun loadCharacters() {
-            //instance.httpRequest.request();
+            instance.httpRequest.request(Config.CHARACTER_URL, ModelType.CHARACTERS);
         }
 
         /**
@@ -37,17 +41,52 @@ class MainController : HttpRequestCallback {
          * will be loaded.
          */
         fun loadVehicles(character: Character) {
+            instance.httpRequest.request(Config.VEHICLES_URL, ModelType.VEHICLES);
+        }
 
+        fun setDelegate(callback : MainControllerCallback)
+        {
+            instance.callback = callback
         }
     }
 
-
-    override fun onDataReceived() {
+    private fun parseCharactersData(data: String)
+    {
         //Parse the data
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var charactersReceived = Character.unarchive(data)
+
+        if(charactersReceived.isEmpty()){
+            //No characters found
+            var error : Error = Error("No characters found");
+            this.callback?.onCharactersFailedLoading(error)
+            return;
+        }
+
+        this.characters.addAll(charactersReceived);
+        this.callback?.onCharactersLoad(charactersReceived)
     }
 
-    override fun onDataFailedReceiving(error: Error) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun parseVehiclesData(data: String)
+    {
+    }
+
+    private fun parseSpeciesData(data: String)
+    {
+
+    }
+
+    override fun onDataReceived(data: String, type: ModelType) {
+        Log.d(object{}.javaClass.enclosingMethod.name)
+
+        when (type) {
+            ModelType.CHARACTERS -> parseCharactersData(data);
+            ModelType.VEHICLES -> parseVehiclesData(data);
+            ModelType.SPECIES -> parseSpeciesData(data);
+        }
+    }
+
+    override fun onDataFailedReceiving(error: Error, type: ModelType) {
+        Log.d(object{}.javaClass.enclosingMethod.name + error.message)
+        this.callback?.onCharactersFailedLoading(error)
     }
 }
