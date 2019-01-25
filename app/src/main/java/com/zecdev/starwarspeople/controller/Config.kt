@@ -17,11 +17,16 @@ class Config {
         /**
          * The URL to obtain all characters.
          */
-        const val CHARACTER_URL = "$BASE_API_URL" + "people/"
+        const val CHARACTERS_URL = "$BASE_API_URL" + "people/"
 
         /**
          * The URL to obtain all species.
          */
-        const val SPECIE_URL = "$BASE_API_URL" + "specie/"
+        const val SPECIES_URL = "$BASE_API_URL" + "species/"
+
+        /**
+         * The URL that should be added to search by a specific page
+         */
+        const val SPECIFIC_PAGE_URL = "?page=";
     }
 }

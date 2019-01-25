@@ -1,6 +1,7 @@
 package com.zecdev.starwarspeople.controller
 import com.zecdev.starwarspeople.model.Character
 import com.zecdev.starwarspeople.model.ModelType
+import com.zecdev.starwarspeople.model.ParserUtils
 import java.lang.Error
 
 /**
@@ -9,14 +10,14 @@ import java.lang.Error
  */
 class MainController constructor(): HttpRequestCallback {
 
-    private var characters : ArrayList<Character>
     private var httpRequest : HttpRequest
-    private var callback : MainControllerCallback? = null
-    private var characterPagination = 0;
+    private var callback : MainControllerCallback?
+    private var characterStore: CharacterStore
 
     init {
-        this.characters = ArrayList<Character>()
         this.httpRequest = HttpRequest(this)
+        this.callback = null
+        this.characterStore = CharacterStore()
     }
 
     companion object {
@@ -30,18 +31,26 @@ class MainController constructor(): HttpRequestCallback {
          * called.
          */
         fun loadCharacters() {
-            instance.httpRequest.request(Config.CHARACTER_URL, ModelType.CHARACTERS);
+            when {
+                instance.characterStore.speciesLoadStatus == LoadStatus.IDLE -> {
+                    instance.requestSpecies()
+                }
+                instance.characterStore.speciesLoadStatus == LoadStatus.LOADING -> {
+                    //wait
+                }
+                else -> {
+                    instance.requestCharacters()
+                }
+            }
         }
 
         /**
          * This function start loading vehicles from the server.
          * When a request is completed the onCharacterVehiclesLoad will
          * be called.
-         * @param character The character whom that the vehicles
-         * will be loaded.
          */
-        fun loadVehicles(character: Character) {
-            instance.httpRequest.request(Config.VEHICLES_URL, ModelType.VEHICLES);
+        fun loadVehicles() {
+            instance.requestVehicles()
         }
 
         fun setDelegate(callback : MainControllerCallback)
@@ -50,43 +59,98 @@ class MainController constructor(): HttpRequestCallback {
         }
     }
 
-    private fun parseCharactersData(data: String)
+    private fun requestSpecies()
     {
-        //Parse the data
-        var charactersReceived = Character.unarchive(data)
+        if(characterStore.speciesLoadStatus == LoadStatus.LOADED){
+            Log.d("All species items are loaded")
+            requestCharacters()
+            return;
+        }
+        val nextPage = this.characterStore.specieLastPagination + 1
+        val url = Config.SPECIES_URL + Config.SPECIFIC_PAGE_URL + nextPage.toString()
+        instance.httpRequest.request(url, ModelType.SPECIES);
+    }
 
-        if(charactersReceived.isEmpty()){
-            //No characters found
-            var error : Error = Error("No characters found");
-            this.callback?.onCharactersFailedLoading(error)
+    private fun requestCharacters()
+    {
+        if(characterStore.charactersLoadStatus == LoadStatus.LOADED){
+            Log.d("All characters items are loaded")
             return;
         }
 
-        this.characters.addAll(charactersReceived);
-        this.callback?.onCharactersLoad(charactersReceived)
+        val nextPage = this.characterStore.characterLastPagination + 1
+        val url = Config.CHARACTERS_URL + Config.SPECIFIC_PAGE_URL + nextPage.toString()
+        instance.httpRequest.request(url, ModelType.CHARACTERS);
     }
 
-    private fun parseVehiclesData(data: String)
+    private fun requestVehicles()
     {
+        if(characterStore.vehiclesLoadStatus == LoadStatus.LOADED){
+            Log.d("All vehicles items are loaded")
+            return;
+        }
+
+        val nextPage = this.characterStore.vehicleLastPagination + 1
+        val url = Config.VEHICLES_URL + Config.SPECIFIC_PAGE_URL + nextPage.toString()
+        instance.httpRequest.request(url, ModelType.VEHICLES);
     }
 
-    private fun parseSpeciesData(data: String)
+    private fun charactersDataReceived(data: String)
     {
+        this.characterStore.addCharacters(data)
+        Log.d("New characters available")
 
+        val charactersArray = ArrayList(characterStore.characters.values)
+        this.callback?.onCharactersLoad(charactersArray)
+    }
+
+    private fun vehiclesDataReceived(data: String)
+    {
+        this.characterStore.addVehicles(data)
+        Log.d("New vehicles received")
+
+        if(ParserUtils.hasNext(data)){
+            requestVehicles()
+        }
+        else
+        {
+            Log.d("All vehicles are loaded")
+            val charactersArray = ArrayList(characterStore.characters.values)
+            this.callback?.onCharacterVehiclesLoad(charactersArray)
+        }
+    }
+
+    private fun speciesDataReceived(data: String)
+    {
+        this.characterStore.addSpecies(data);
+
+        if(ParserUtils.hasNext(data)){
+            requestSpecies()
+        }
+        else
+        {
+            Log.d("All species are loaded")
+            requestCharacters()
+        }
     }
 
     override fun onDataReceived(data: String, type: ModelType) {
         Log.d(object{}.javaClass.enclosingMethod.name)
 
         when (type) {
-            ModelType.CHARACTERS -> parseCharactersData(data);
-            ModelType.VEHICLES -> parseVehiclesData(data);
-            ModelType.SPECIES -> parseSpeciesData(data);
+            ModelType.CHARACTERS -> charactersDataReceived(data);
+            ModelType.VEHICLES -> vehiclesDataReceived(data);
+            ModelType.SPECIES -> speciesDataReceived(data);
         }
     }
 
     override fun onDataFailedReceiving(error: Error, type: ModelType) {
         Log.d(object{}.javaClass.enclosingMethod.name + error.message)
-        this.callback?.onCharactersFailedLoading(error)
+
+        when (type) {
+            ModelType.CHARACTERS -> this.callback?.onCharactersFailedLoading(error)
+            ModelType.VEHICLES -> this.callback?.onCharacterVehiclesFailedLoading(error)
+            ModelType.SPECIES -> this.callback?.onCharactersFailedLoading(error)
+        }
     }
 }

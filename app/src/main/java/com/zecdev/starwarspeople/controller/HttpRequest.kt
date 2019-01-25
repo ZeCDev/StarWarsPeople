@@ -16,6 +16,7 @@ class HttpRequest constructor(callback: HttpRequestCallback) {
     }
 
     fun request(url : String, type : ModelType) {
+        Log.d("Request to url: " + url)
         Fuel.get(url).responseString { request, response, result ->
 
             result.fold({ data ->

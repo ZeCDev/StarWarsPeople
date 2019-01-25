@@ -21,17 +21,19 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
 
     override fun onCharactersLoad(characters: List<Character>) {
         Log.d(object{}.javaClass.enclosingMethod.name + " size = " + characters.size)
+        MainController.loadCharacters()
     }
 
     override fun onCharactersFailedLoading(error: Error) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onCharacterVehiclesLoad(character: Character, vehicles: List<Vehicle>) {
-        Log.d(object{}.javaClass.enclosingMethod.name + " size = " + vehicles.size)
+    override fun onCharacterVehiclesLoad(characters: List<Character>) {
+        Log.d(object{}.javaClass.enclosingMethod.name)
+        Log.d(object{}.javaClass.enclosingMethod.name + " size = " + characters.size)
     }
 
-    override fun onCharacterVehiclesFailedLoading(character: Character, error: Error) {
+    override fun onCharacterVehiclesFailedLoading(error: Error) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

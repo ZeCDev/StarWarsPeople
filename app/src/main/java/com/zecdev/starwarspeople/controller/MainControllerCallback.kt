@@ -27,16 +27,15 @@ interface MainControllerCallback {
     /**
      * This function indicates that a load of vehicles from the
      * server happens.
-     * @param character The character that have this vehicles
-     * @param vehicles The list of the vehicles received.
+     * @param characters The list of the characters available
+     * with all cars.
      */
-    abstract fun onCharacterVehiclesLoad(character: Character, vehicles: List<Vehicle>)
+    abstract fun onCharacterVehiclesLoad(characters: List<Character>)
 
     /**
      * This function indicates that a load of vehicles from the
      * server failed.
-     * @param character The character that load of vehicles failed.
      * @param error The error that has the reason why it failed.
      */
-    abstract fun onCharacterVehiclesFailedLoading(character: Character, error: Error)
+    abstract fun onCharacterVehiclesFailedLoading(error: Error)
 }

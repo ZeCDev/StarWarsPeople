@@ -1,13 +1,11 @@
 package com.zecdev.starwarspeople.model
 
-import java.lang.Exception
-
 class Vehicle constructor(id: Int, name: String, model: String,
                           manufacturer: String) {
-    private val id : Int
-    private val name : String
-    private val model : String
-    private val manufacturer : String
+    val id : Int
+    val name : String
+    val model : String
+    val manufacturer : String
 
     init {
         this.id = id
@@ -18,17 +16,17 @@ class Vehicle constructor(id: Int, name: String, model: String,
 
     companion object {
 
-        fun unarchive(data: Array<Byte>) : List<Vehicle> {
+        fun unarchive(data: String) : HashMap<Int, Vehicle> {
 
-            var list : ArrayList<Vehicle> = ArrayList<Vehicle>()
+            var map : HashMap<Int, Vehicle> = HashMap<Int, Vehicle>()
 
             if(data == null){
-                return list;
+                return map;
             }
 
             //Parse the data
 
-            return list;
+            return map;
         }
     }
 }
