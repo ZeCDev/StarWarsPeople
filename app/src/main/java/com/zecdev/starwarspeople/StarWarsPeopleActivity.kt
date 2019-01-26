@@ -17,7 +17,7 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
         //Subscribe the events
         MainController.setDelegate(this)
         //Start loading characters
-        MainController.loadCharacters()
+        //MainController.loadCharacters()
     }
 
     /**
