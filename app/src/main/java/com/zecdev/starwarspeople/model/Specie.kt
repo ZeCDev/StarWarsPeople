@@ -1,7 +1,5 @@
 package com.zecdev.starwarspeople.model
 
-import com.zecdev.starwarspeople.controller.Log
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -18,6 +16,13 @@ class Specie constructor(id: Int, name: String, designation: String) {
 
     companion object {
 
+        /**
+         * Parse the data received from the server.
+         * @see https://swapi.co/documentation
+         * @param data The data in JSON format with a list
+         * of species.
+         * @return a map with species. <SpecieId, Specie>
+         */
         fun unarchive(data: String) : HashMap<Int, Specie>  {
 
             var map : HashMap<Int, Specie> = HashMap<Int, Specie>()

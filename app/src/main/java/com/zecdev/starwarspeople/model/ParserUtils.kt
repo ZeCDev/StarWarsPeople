@@ -1,12 +1,21 @@
 package com.zecdev.starwarspeople.model
 
-import com.zecdev.starwarspeople.controller.Log
 import org.json.JSONObject
 
+/**
+ * This class have function with utilities to parse
+ * data received from the swapi API.
+ */
 class ParserUtils {
 
     companion object {
 
+        /**
+         * Indicates if a next page is available.
+         * @param data The JSON data received from the server.
+         * @return true if have a next page, otherwise return
+         * false.
+         */
         fun hasNext(data: String): Boolean {
 
             if(data == null){
@@ -23,6 +32,12 @@ class ParserUtils {
             return true;
         }
 
+        /**
+         * Indicates the page of this data.
+         * @param data The JSON data received from the server.
+         * @return a integer that represent the number of
+         * the page. If something goes wrong, is returned -1.
+         */
         fun getActualPage(data: String): Int {
 
             if(data == null){
@@ -62,6 +77,13 @@ class ParserUtils {
             return actualPage
         }
 
+        /**
+         * Indicates the next page of this data.
+         * @param data The JSON data received from the server.
+         * @return a integer that represent the number of
+         * the next page. If something goes wrong, or there is no next
+         * is returned -1.
+         */
         fun getNextPage(data: String): Int {
             if(data == null){
                 return -1;

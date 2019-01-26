@@ -40,6 +40,10 @@ class CharacterStore constructor()
         this.vehiclesLoadStatus = LoadStatus.IDLE
     }
 
+    /**
+     * This function store species received from the server.
+     * @param data The data received from the server.
+     */
     fun addSpecies(data: String)
     {
         if(this.speciesLoadStatus == LoadStatus.IDLE){
@@ -59,7 +63,10 @@ class CharacterStore constructor()
         }
     }
 
-
+    /**
+     * This function store characters received from the server.
+     * @param data The data received from the server.
+     */
     fun addCharacters(data: String)
     {
         if(this.charactersLoadStatus == LoadStatus.IDLE){
@@ -86,6 +93,10 @@ class CharacterStore constructor()
         }
     }
 
+    /**
+     * This function store vehicles received from the server.
+     * @param data The data received from the server.
+     */
     fun addVehicles(data: String)
     {
         if(this.vehiclesLoadStatus == LoadStatus.IDLE){
@@ -105,6 +116,11 @@ class CharacterStore constructor()
         }
     }
 
+    /**
+     * This function update the vehicles in each characters.
+     * It can be used when the list of vehicles change or when
+     * the list it's successful loaded.
+     */
     private fun updateVehiclesInCharacters()
     {
         Log.d(object{}.javaClass.enclosingMethod.name)
@@ -115,16 +131,14 @@ class CharacterStore constructor()
 
         for ((key, value) in this.characters) {
             //add vehicle to character....
-            if(vehiclesLoadStatus == LoadStatus.LOADED){
-                val listIds = value.getVehiclesIds()
-                for (id: Int in listIds) {
-                    if(vehicles.get(id) == null){
-                        //not expected
-                        Log.d("Null vehicle not expected")
-                        break;
-                    }
-                    value.vehicles.add(vehicles.get(id)!!)
+            val listIds = value.getVehiclesIds()
+            for (id: Int in listIds) {
+                if(vehicles.get(id) == null){
+                    //not expected
+                    Log.d("Null vehicle not expected id =" + id)
+                    break;
                 }
+                value.vehicles.add(vehicles.get(id)!!)
             }
         }
     }

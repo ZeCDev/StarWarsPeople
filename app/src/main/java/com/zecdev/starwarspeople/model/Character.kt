@@ -31,10 +31,11 @@ class Character constructor(id: Int, name: String, specieId: Int,
         this.skinColor = skinColor
     }
 
-    fun getNrVehicles(): Int {
-        return vehiclesUrls.size;
-    }
-
+    /**
+     * This function return a list of id's of vehicles,
+     * that this character is owner.
+     * @return a list of vehicles id's
+     */
     fun getVehiclesIds(): List<Int> {
         var ids = ArrayList<Int>()
         for (item: String in vehiclesUrls) {
@@ -47,6 +48,13 @@ class Character constructor(id: Int, name: String, specieId: Int,
 
     companion object {
 
+        /**
+         * Parse the data received from the server.
+         * @see https://swapi.co/documentation
+         * @param data The data in JSON format with a list
+         * of characters.
+         * @return a map with characters. <CharacterId, Character>
+         */
         fun unarchive(data: String) : HashMap<Int, Character> {
             Log.d(object{}.javaClass.enclosingMethod.name)
 

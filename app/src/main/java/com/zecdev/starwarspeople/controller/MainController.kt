@@ -26,7 +26,11 @@ class MainController constructor(): HttpRequestCallback {
         private val instance = MainController()
 
         /**
-         * This function start loading characters from the server.
+         * This function starts loading all the species from the server,
+         * if the loading, has not yet been done, otherwise it will start
+         * loading of characters from the server, starting on the last page
+         * received. If not received any characters yet, then it will start
+         * on first page.
          * When a request is completed the onCharactersLoad will be
          * called.
          */
@@ -36,7 +40,7 @@ class MainController constructor(): HttpRequestCallback {
                     instance.requestSpecies()
                 }
                 instance.characterStore.speciesLoadStatus == LoadStatus.LOADING -> {
-                    //wait
+                    //wait that all species are loaded.
                 }
                 else -> {
                     instance.requestCharacters()
@@ -53,12 +57,32 @@ class MainController constructor(): HttpRequestCallback {
             instance.requestVehicles()
         }
 
+        /**
+         * This function it's used to define the callback.
+         * The class that implement this callback and call
+         * this function will be notified about the events
+         * declared in the MainControllerCallback.
+         * @param callback The callback that will receive the
+         * events.
+         */
         fun setDelegate(callback : MainControllerCallback)
         {
             instance.callback = callback
         }
+
+        /**
+         * Return a list of characters available in memory.
+         * @return the list of characters.
+         */
+        fun getCharacters(): MutableCollection<Character> {
+            return instance.characterStore.characters.values
+        }
     }
 
+    /**
+     * Start a request from all species from the last page
+     * received. If all species are loaded, nothing will be done.
+     */
     private fun requestSpecies()
     {
         if(characterStore.speciesLoadStatus == LoadStatus.LOADED){
@@ -71,6 +95,10 @@ class MainController constructor(): HttpRequestCallback {
         instance.httpRequest.request(url, ModelType.SPECIES);
     }
 
+    /**
+     * Start a request from all characters from the last page
+     * received. If all characters are loaded, nothing will be done.
+     */
     private fun requestCharacters()
     {
         if(characterStore.charactersLoadStatus == LoadStatus.LOADED){
@@ -83,6 +111,10 @@ class MainController constructor(): HttpRequestCallback {
         instance.httpRequest.request(url, ModelType.CHARACTERS);
     }
 
+    /**
+     * Start a request from all vehicles from the last page
+     * received. If all vehicles are loaded, nothing will be done.
+     */
     private fun requestVehicles()
     {
         if(characterStore.vehiclesLoadStatus == LoadStatus.LOADED){
@@ -95,6 +127,11 @@ class MainController constructor(): HttpRequestCallback {
         instance.httpRequest.request(url, ModelType.VEHICLES);
     }
 
+    /**
+     * This function store the data about the characters received,
+     * and invoke the onCharactersLoad method.
+     * @param data The data received from the server.
+     */
     private fun charactersDataReceived(data: String)
     {
         this.characterStore.addCharacters(data)
@@ -104,6 +141,12 @@ class MainController constructor(): HttpRequestCallback {
         this.callback?.onCharactersLoad(charactersArray)
     }
 
+    /**
+     * This function store the data about the vehicles received,
+     * and invoke the onCharacterVehiclesLoad method if all vehicles
+     * are loaded, otherwise try to load the next page.
+     * @param data The data received from the server.
+     */
     private fun vehiclesDataReceived(data: String)
     {
         this.characterStore.addVehicles(data)
@@ -120,6 +163,12 @@ class MainController constructor(): HttpRequestCallback {
         }
     }
 
+    /**
+     * This function store the data about the species received,
+     * and start request characters if all species
+     * are loaded, otherwise try to load the next page.
+     * @param data The data received from the server.
+     */
     private fun speciesDataReceived(data: String)
     {
         this.characterStore.addSpecies(data);
@@ -134,6 +183,9 @@ class MainController constructor(): HttpRequestCallback {
         }
     }
 
+    /**
+     * @see HttpRequestCallback.onDataReceived
+     */
     override fun onDataReceived(data: String, type: ModelType) {
         Log.d(object{}.javaClass.enclosingMethod.name)
 
@@ -144,6 +196,9 @@ class MainController constructor(): HttpRequestCallback {
         }
     }
 
+    /**
+     * @see HttpRequestCallback.onDataFailedReceiving
+     */
     override fun onDataFailedReceiving(error: Error, type: ModelType) {
         Log.d(object{}.javaClass.enclosingMethod.name + error.message)
 
