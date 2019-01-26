@@ -1,7 +1,10 @@
 package com.zecdev.starwarspeople
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.RecyclerView
+import android.widget.Button
 import com.zecdev.starwarspeople.controller.Log
 import com.zecdev.starwarspeople.controller.MainController
 import com.zecdev.starwarspeople.controller.MainControllerCallback
@@ -14,10 +17,23 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_star_wars_people)
 
+        getBtnAbout().setOnClickListener {
+            val intent = Intent(applicationContext, AboutActivity::class.java)
+            startActivity(intent);
+        }
+
         //Subscribe the events
         MainController.setDelegate(this)
         //Start loading characters
         //MainController.loadCharacters()
+    }
+
+    private fun getBtnAbout():Button{
+        return findViewById(com.zecdev.starwarspeople.R.id.btnAbout) as android.widget.Button
+    }
+
+    private fun getCharactersRecyclerView():RecyclerView{
+        return findViewById(R.id.charactersRecyclerView) as RecyclerView
     }
 
     /**
