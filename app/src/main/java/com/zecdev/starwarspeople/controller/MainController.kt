@@ -74,8 +74,14 @@ class MainController constructor(): HttpRequestCallback {
          * Return a list of characters available in memory.
          * @return the list of characters.
          */
-        fun getCharacters(): MutableCollection<Character> {
-            return instance.characterStore.characters.values
+        fun getCharacters(): ArrayList<Character> {
+            
+            var arrayCopy: ArrayList<Character> = ArrayList()
+            for (character in instance.characterStore.characters.values) {
+                arrayCopy.add(character)
+            }
+
+            return arrayCopy
         }
     }
 

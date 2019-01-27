@@ -1,8 +1,10 @@
 package com.zecdev.starwarspeople
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.Button
 import com.zecdev.starwarspeople.controller.Log
@@ -22,10 +24,28 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
             startActivity(intent);
         }
 
+        getCharactersRecyclerView().addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (recyclerView != null && !recyclerView.canScrollVertically(1)) {
+                    MainController.loadCharacters()
+                }
+            }
+        })
+
+        createCharacterRecyclerView()
+
         //Subscribe the events
         MainController.setDelegate(this)
         //Start loading characters
-        //MainController.loadCharacters()
+        MainController.loadCharacters()
+    }
+
+    private fun createCharacterRecyclerView()
+    {
+        getCharactersRecyclerView().adapter = CharactersRecyclerAdapter()
+        getCharactersRecyclerView().layoutManager = LinearLayoutManager(this)
     }
 
     private fun getBtnAbout():Button{
@@ -41,10 +61,28 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
      */
     override fun onCharactersLoad(characters: List<Character>) {
         Log.d(object{}.javaClass.enclosingMethod.name + " size = " + characters.size)
-        MainController.loadCharacters()
+
+        var adapter: CharactersRecyclerAdapter = getCharactersRecyclerView().adapter as CharactersRecyclerAdapter;
+        adapter.characters = ArrayList(characters)
+        adapter.notifyDataSetChanged();
+
         if(characters.size > 80){
             MainController.loadVehicles()
         }
+    }
+
+    private fun showAlert()
+    {
+        val builder = AlertDialog.Builder(this@StarWarsPeopleActivity)
+        builder.setTitle("Something went wrong")
+        builder.setMessage("The request to server failed. Check your internet connection.")
+
+        builder.setPositiveButton("Ok"){dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
     /**
@@ -52,6 +90,7 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
      */
     override fun onCharactersFailedLoading(error: Error) {
         Log.d(object{}.javaClass.enclosingMethod.name + " onCharactersFailedLoading");
+        showAlert()
     }
 
     /**
@@ -67,5 +106,6 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback {
      */
     override fun onCharacterVehiclesFailedLoading(error: Error) {
         Log.d(object{}.javaClass.enclosingMethod.name + " onCharactersFailedLoading");
+        showAlert()
     }
 }
