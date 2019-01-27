@@ -6,15 +6,14 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.widget.Button
 import com.zecdev.starwarspeople.controller.Log
 import com.zecdev.starwarspeople.controller.MainController
-import com.zecdev.starwarspeople.controller.MainControllerCallback
+import com.zecdev.starwarspeople.controller.MainControllerCharactersCallback
 import com.zecdev.starwarspeople.model.Character
 import java.lang.Error
 
-class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback, OnClickListener {
+class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCharactersCallback, OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +28,7 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback, OnCl
         setScrollListener()
 
         //Subscribe the events
-        MainController.setDelegate(this)
+        MainController.setCharactersDelegate(this)
         //Start loading characters
         MainController.loadCharacters()
     }
@@ -70,30 +69,14 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback, OnCl
     }
 
     /**
-     * Show a alertDialog to user with the error that happens.
-     * @param error The error with the reason for the failure.
-     */
-    private fun showAlert(error: Error)
-    {
-        runOnUiThread {
-            val builder = AlertDialog.Builder(this@StarWarsPeopleActivity)
-            builder.setTitle("Something went wrong")
-            builder.setMessage("An error happened. Description : " + error.message)
-
-            builder.setPositiveButton("Ok"){dialog, which ->
-                dialog.dismiss()
-            }
-
-            val dialog: AlertDialog = builder.create()
-            dialog.show()
-        }
-    }
-
-    /**
      * @see OnClickListener.onClick
      */
     override fun onClick(character: Character) {
         Log.d("Clicked name = " + character.name)
+
+        val intent = Intent(applicationContext, CharacterActivity::class.java)
+        intent.putExtra("characterId", character.id)
+        startActivity(intent);
     }
 
     /**
@@ -106,10 +89,6 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback, OnCl
             var adapter: CharactersRecyclerAdapter = getCharactersRecyclerView().adapter as CharactersRecyclerAdapter;
             adapter.characters = ArrayList(characters)
             adapter.notifyDataSetChanged();
-
-            if(characters.size > 80){
-                MainController.loadVehicles()
-            }
         }
     }
 
@@ -118,22 +97,6 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCallback, OnCl
      */
     override fun onCharactersFailedLoading(error: Error) {
         Log.d(object{}.javaClass.enclosingMethod.name + " onCharactersFailedLoading");
-        showAlert(error)
-    }
-
-    /**
-     * @see MainControllerCallback.onCharacterVehiclesLoad
-     */
-    override fun onCharacterVehiclesLoad(characters: List<Character>) {
-        Log.d(object{}.javaClass.enclosingMethod.name)
-        Log.d(object{}.javaClass.enclosingMethod.name + " size = " + characters.size)
-    }
-
-    /**
-     * @see MainControllerCallback.onCharacterVehiclesFailedLoading
-     */
-    override fun onCharacterVehiclesFailedLoading(error: Error) {
-        Log.d(object{}.javaClass.enclosingMethod.name + " onCharactersFailedLoading");
-        showAlert(error)
+        UIUtils.showAlert(this, error)
     }
 }

@@ -11,12 +11,16 @@ import java.lang.Error
 class MainController constructor(): HttpRequestCallback {
 
     private var httpRequest : HttpRequest
-    private var callback : MainControllerCallback?
+
+    private var charactersCallback : MainControllerCharactersCallback?
+    private var vehiclesCallback : MainControllerVehiclesCallback?
+
     private var characterStore: CharacterStore
 
     init {
         this.httpRequest = HttpRequest(this)
-        this.callback = null
+        this.charactersCallback = null
+        this.vehiclesCallback = null
         this.characterStore = CharacterStore()
     }
 
@@ -61,13 +65,26 @@ class MainController constructor(): HttpRequestCallback {
          * This function it's used to define the callback.
          * The class that implement this callback and call
          * this function will be notified about the events
-         * declared in the MainControllerCallback.
+         * declared in the MainControllerCharactersCallback.
          * @param callback The callback that will receive the
          * events.
          */
-        fun setDelegate(callback : MainControllerCallback)
+        fun setCharactersDelegate(callback : MainControllerCharactersCallback)
         {
-            instance.callback = callback
+            instance.charactersCallback = callback
+        }
+
+        /**
+         * This function it's used to define the callback.
+         * The class that implement this callback and call
+         * this function will be notified about the events
+         * declared in the MainControllerVehiclesCallback.
+         * @param callback The callback that will receive the
+         * events.
+         */
+        fun setVehiclesDelegate(callback : MainControllerVehiclesCallback)
+        {
+            instance.vehiclesCallback = callback
         }
 
         /**
@@ -75,7 +92,7 @@ class MainController constructor(): HttpRequestCallback {
          * @return the list of characters.
          */
         fun getCharacters(): ArrayList<Character> {
-            
+
             var arrayCopy: ArrayList<Character> = ArrayList()
             for (character in instance.characterStore.characters.values) {
                 arrayCopy.add(character)
@@ -144,7 +161,7 @@ class MainController constructor(): HttpRequestCallback {
         Log.d("New characters available")
 
         val charactersArray = ArrayList(characterStore.characters.values)
-        this.callback?.onCharactersLoad(charactersArray)
+        this.charactersCallback?.onCharactersLoad(charactersArray)
     }
 
     /**
@@ -165,7 +182,7 @@ class MainController constructor(): HttpRequestCallback {
         {
             Log.d("All vehicles are loaded")
             val charactersArray = ArrayList(characterStore.characters.values)
-            this.callback?.onCharacterVehiclesLoad(charactersArray)
+            this.vehiclesCallback?.onCharacterVehiclesLoad(charactersArray)
         }
     }
 
@@ -209,9 +226,9 @@ class MainController constructor(): HttpRequestCallback {
         Log.d(object{}.javaClass.enclosingMethod.name + error.message)
 
         when (type) {
-            ModelType.CHARACTERS -> this.callback?.onCharactersFailedLoading(error)
-            ModelType.VEHICLES -> this.callback?.onCharacterVehiclesFailedLoading(error)
-            ModelType.SPECIES -> this.callback?.onCharactersFailedLoading(error)
+            ModelType.CHARACTERS -> this.charactersCallback?.onCharactersFailedLoading(error)
+            ModelType.VEHICLES -> this.vehiclesCallback?.onCharacterVehiclesFailedLoading(error)
+            ModelType.SPECIES -> this.charactersCallback?.onCharactersFailedLoading(error)
         }
     }
 }

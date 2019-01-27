@@ -6,4 +6,12 @@
     <string name="about_birthdate">Birth date:</string>
     <string name="developer_name">José</string>
     <string name="developer_birth_date">12-06-1990</string>
+
+    <string name="gender">Gender: </string>
+    <string name="home_world">Home World: </string>
+    <string name="skin_color">Skin Color: </string>
+
+    <string name="load">Loading...</string>
+    <string name="search">Google search</string>
+
 </resources>

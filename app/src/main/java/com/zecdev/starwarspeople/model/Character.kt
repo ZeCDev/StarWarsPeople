@@ -5,9 +5,10 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
+
 class Character constructor(id: Int, name: String, specieId: Int,
                             vehiclesUrls: List<String>, gender: String,
-                            homeWorld: String, skinColor: String) {
+                            homeWorld: String, skinColor: String){
 
     val id : Int
     val name : String

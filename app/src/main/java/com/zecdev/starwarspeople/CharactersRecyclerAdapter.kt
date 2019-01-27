@@ -53,7 +53,7 @@ class CharactersRecyclerAdapter constructor(listener: OnClickListener):
 
             view.characterName.text = character.name
             view.characterSpecie.text = specieName
-            view.characterVehiclesNr.text = character.vehicles.size.toString()
+            view.characterVehiclesNr.text = character.vehiclesUrls.size.toString()
 
             itemView.setOnClickListener {
                 listener.onClick(character)
