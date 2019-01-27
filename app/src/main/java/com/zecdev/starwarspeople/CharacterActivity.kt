@@ -3,6 +3,7 @@ package com.zecdev.starwarspeople
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.support.annotation.UiThread
 import android.support.v7.widget.LinearLayoutManager
@@ -51,6 +52,7 @@ class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback, M
         }
 
         getSkinColorTextView().text = character!!.skinColor
+        getSkinColorTextView().setTextColor(Color.parseColor(UIUtils.getColor(character!!.skinColor)))
 
         getBtnSearch().setOnClickListener {
             googleSearch()
@@ -135,7 +137,7 @@ class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback, M
     }
 
     /**
-     * @see MainControllerCallback.onCharacterVehiclesLoad
+     * @see MainControllerVehiclesCallback.onCharacterVehiclesLoad
      */
     override fun onCharacterVehiclesLoad(characters: List<Character>) {
         Log.d(object{}.javaClass.enclosingMethod.name)
@@ -154,7 +156,7 @@ class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback, M
     }
 
     /**
-     * @see MainControllerCallback.onCharacterVehiclesFailedLoading
+     * @see MainControllerVehiclesCallback.onCharacterVehiclesFailedLoading
      */
     override fun onCharacterVehiclesFailedLoading(error: Error) {
         Log.d(object{}.javaClass.enclosingMethod.name + " onCharactersFailedLoading");

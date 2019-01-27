@@ -108,7 +108,9 @@ class ParserUtils {
         }
 
         /**
-         * This function return a id that exist in URL.
+         * This function parse a url to find the id.
+         * @return the id of the existent on URL or -1
+         * if not.
          */
         fun getIdByUrl(url: String) : Int {
 

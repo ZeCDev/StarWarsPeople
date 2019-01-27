@@ -2,7 +2,7 @@ package com.zecdev.starwarspeople.controller
 
 import com.zecdev.starwarspeople.model.*
 
-public enum class LoadStatus {
+enum class LoadStatus {
     IDLE, LOADING, LOADED
 }
 
@@ -81,9 +81,9 @@ class CharacterStore constructor()
             value.specie = species.get(value.specieId)
         }
 
-        characters.putAll(charactersMap);
+        updateVehiclesInCharacters(charactersMap)
 
-        updateVehiclesInCharacters()
+        characters.putAll(charactersMap);
 
         val actualPage = ParserUtils.getActualPage(data);
         Log.d("Total characters = " + characters.size + " current page = " + actualPage)
@@ -100,6 +100,11 @@ class CharacterStore constructor()
      */
     fun addVehicles(data: String)
     {
+        if(this.vehiclesLoadStatus == LoadStatus.LOADED){
+            //ignore them
+            return;
+        }
+
         if(this.vehiclesLoadStatus == LoadStatus.IDLE){
             this.vehiclesLoadStatus = LoadStatus.LOADING
         }
@@ -113,7 +118,7 @@ class CharacterStore constructor()
 
         if(!ParserUtils.hasNext(data)){
             this.vehiclesLoadStatus = LoadStatus.LOADED
-            updateVehiclesInCharacters()
+            updateVehiclesInAllCharacters()
         }
     }
 
@@ -145,7 +150,17 @@ class CharacterStore constructor()
      * It can be used when the list of vehicles change or when
      * the list it's successful loaded.
      */
-    private fun updateVehiclesInCharacters()
+    private fun updateVehiclesInAllCharacters()
+    {
+        Log.d(object{}.javaClass.enclosingMethod.name)
+        updateVehiclesInCharacters(this.characters)
+    }
+
+    /**
+     * This function update the vehicles in characters passed by parameter.
+     * @param map An map with some Characters.
+     */
+    private fun updateVehiclesInCharacters(map :HashMap<Int, Character>)
     {
         Log.d(object{}.javaClass.enclosingMethod.name)
         if(vehiclesLoadStatus != LoadStatus.LOADED){
@@ -153,7 +168,7 @@ class CharacterStore constructor()
             return;
         }
 
-        for ((key, value) in this.characters) {
+        for ((key, value) in map) {
             //add vehicle to character....
             val listIds = value.getVehiclesIds()
             for (id: Int in listIds) {

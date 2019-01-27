@@ -79,7 +79,7 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCharactersCall
     }
 
     /**
-     * @see MainControllerCallback.onCharactersLoad
+     * @see MainControllerCharactersCallback.onCharactersLoad
      */
     override fun onCharactersLoad(characters: List<Character>) {
         Log.d(object{}.javaClass.enclosingMethod.name + " size = " + characters.size)
@@ -92,7 +92,7 @@ class StarWarsPeopleActivity : AppCompatActivity(), MainControllerCharactersCall
     }
 
     /**
-     * @see MainControllerCallback.onCharactersFailedLoading
+     * @see MainControllerCharactersCallback.onCharactersFailedLoading
      */
     override fun onCharactersFailedLoading(error: Error) {
         Log.d(object{}.javaClass.enclosingMethod.name + " onCharactersFailedLoading");
