@@ -14,7 +14,7 @@ interface HttpRequestCallback {
      * @param data The data received from the server.
      * @param type Is the type of model received.
      */
-    abstract fun onDataReceived(data: String, type: ModelType);
+    fun onDataReceived(data: String, type: ModelType);
 
     /**
      * This function indicates that a some fail happens during
@@ -22,5 +22,5 @@ interface HttpRequestCallback {
      * @param error The error that has the reason why it failed.
      * @param type Is the type of model that failed.
      */
-    abstract fun onDataFailedReceiving(error: Error, type: ModelType)
+    fun onDataFailedReceiving(error: Error, type: ModelType)
 }

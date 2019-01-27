@@ -8,14 +8,16 @@ import com.zecdev.starwarspeople.controller.Log
 import com.zecdev.starwarspeople.model.Character
 import kotlinx.android.synthetic.main.recyclerview_character_row.view.*
 
-class CharactersRecyclerAdapter():
+class CharactersRecyclerAdapter constructor(listener: OnClickListener):
     RecyclerView.Adapter<CharactersRecyclerAdapter.CharacterHolder>()  {
 
     var characters: ArrayList<Character>
+    val listener: OnClickListener
 
     init
     {
         this.characters = ArrayList<Character>()
+        this.listener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterHolder {
@@ -29,8 +31,8 @@ class CharactersRecyclerAdapter():
     }
 
     override fun onBindViewHolder(holder: CharacterHolder, position: Int) {
-        val itemPhoto = characters[position]
-        holder.bindCharacter(itemPhoto)
+        val item = characters[position]
+        holder.bindCharacter(item, listener)
     }
 
     class CharacterHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
@@ -42,7 +44,7 @@ class CharactersRecyclerAdapter():
             v.setOnClickListener(this)
         }
 
-        fun bindCharacter(character: Character) {
+        fun bindCharacter(character: Character, listener: OnClickListener) {
             this.character = character
             var specieName = "..."
             if(character.specie != null){
@@ -52,14 +54,14 @@ class CharactersRecyclerAdapter():
             view.characterName.text = character.name
             view.characterSpecie.text = specieName
             view.characterVehiclesNr.text = character.vehicles.size.toString()
+
+            itemView.setOnClickListener {
+                listener.onClick(character)
+            }
         }
 
         override fun onClick(v: View) {
             Log.d("RecyclerView Clicked")
-        }
-
-        companion object {
-            private val CHARACTER_KEY = "CHARACTER"
         }
     }
 }
