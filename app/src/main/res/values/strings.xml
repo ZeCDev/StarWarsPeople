@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">StarWarsPeople</string>
     <string name="about_btn">About</string>
+
+    <string name="about_name">Name:</string>
+    <string name="about_birthdate">Birth date:</string>
+    <string name="developer_name">José</string>
+    <string name="developer_birth_date">12-06-1990</string>
 </resources>
