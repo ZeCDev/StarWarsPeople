@@ -71,7 +71,8 @@ class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback, M
     }
 
     /**
-     * This function does a search on google by this character
+     * This function does a search on google by this character.
+     * A browser will be open.
      */
     private fun googleSearch()
     {
