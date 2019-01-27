@@ -4,19 +4,22 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
 import android.net.Uri
+import android.support.annotation.UiThread
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.Button
 import android.widget.TextView
 import com.zecdev.starwarspeople.controller.Log
 import com.zecdev.starwarspeople.controller.MainController
+import com.zecdev.starwarspeople.controller.MainControllerHomeWorldCallback
 import com.zecdev.starwarspeople.controller.MainControllerVehiclesCallback
 import com.zecdev.starwarspeople.model.Character
+import com.zecdev.starwarspeople.model.HomeWorld
 import java.lang.Error
 import java.net.URLEncoder
 
 
-class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback {
+class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback, MainControllerHomeWorldCallback {
 
     private var character: Character? = null
 
@@ -36,10 +39,17 @@ class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback {
         }
 
         createVehicleRecyclerView()
+        MainController.setHomeWorldDelegate(this)
 
         getNameTextView().text = character!!.name
         getGenderTextView().text = character!!.gender
-        getHomeWorldTextView().text = character!!.homeWorld
+
+        val hw = MainController.getHomeWorld(character!!.homeWorld)
+        getHomeWorldTextView().text = "Loading..."
+        if(hw != null){
+            getHomeWorldTextView().text = hw.name
+        }
+
         getSkinColorTextView().text = character!!.skinColor
 
         getBtnSearch().setOnClickListener {
@@ -149,5 +159,14 @@ class CharacterActivity : AppCompatActivity(), MainControllerVehiclesCallback {
     override fun onCharacterVehiclesFailedLoading(error: Error) {
         Log.d(object{}.javaClass.enclosingMethod.name + " onCharactersFailedLoading");
         UIUtils.showAlert(this, error)
+    }
+
+    /**
+     * @see MainControllerHomeWorldCallback.onHomeWorldLoad
+     */
+    override fun onHomeWorldLoad(homeWorld: HomeWorld) {
+        runOnUiThread{
+            getHomeWorldTextView().text = homeWorld.name
+        }
     }
 }

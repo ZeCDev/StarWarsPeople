@@ -1,5 +1,6 @@
 package com.zecdev.starwarspeople.model
 
+import org.json.JSONException
 import org.json.JSONObject
 
 /**
@@ -104,6 +105,21 @@ class ParserUtils {
             }
 
             return nextArray.get(nextArray.lastIndex).toInt()
+        }
+
+        /**
+         * This function return a id that exist in URL.
+         */
+        fun getIdByUrl(url: String) : Int {
+
+            if(url == null){
+                return -1;
+            }
+
+            val lstValues: List<String> = url.split("/")
+            val id: Int = lstValues.get(lstValues.size - 2).toInt()
+
+            return id
         }
     }
 }

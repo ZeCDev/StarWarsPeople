@@ -1,9 +1,6 @@
 package com.zecdev.starwarspeople.controller
 
-import com.zecdev.starwarspeople.model.Character
-import com.zecdev.starwarspeople.model.ParserUtils
-import com.zecdev.starwarspeople.model.Specie
-import com.zecdev.starwarspeople.model.Vehicle
+import com.zecdev.starwarspeople.model.*
 
 public enum class LoadStatus {
     IDLE, LOADING, LOADED
@@ -26,6 +23,8 @@ class CharacterStore constructor()
     var vehicleLastPagination : Int;
     var vehiclesLoadStatus : LoadStatus;
 
+    private var homeWorlds : HashMap<Int, HomeWorld>
+
     init {
         this.characters = HashMap<Int, Character>()
         this.characterLastPagination = 0;
@@ -38,6 +37,8 @@ class CharacterStore constructor()
         this.vehicles = HashMap<Int, Vehicle>()
         this.vehicleLastPagination = 0
         this.vehiclesLoadStatus = LoadStatus.IDLE
+
+        this.homeWorlds = HashMap<Int, HomeWorld>()
     }
 
     /**
@@ -114,6 +115,29 @@ class CharacterStore constructor()
             this.vehiclesLoadStatus = LoadStatus.LOADED
             updateVehiclesInCharacters()
         }
+    }
+
+    /**
+     * This function store homeWorld received from the server.
+     * @param data The data received from the server.
+     */
+    fun addHomeWorld(data: String): HomeWorld?
+    {
+        val homeWorld = HomeWorld.unarchive(data)
+        if (homeWorld != null) {
+            homeWorlds.put(homeWorld.id, homeWorld)
+            return homeWorld
+        }
+        return null
+    }
+
+    /**
+     * This function return the homeWorld with the
+     * id passed by parameter.
+     */
+    fun getHomeWorld(homeWorldId: Int): HomeWorld?
+    {
+        return homeWorlds.get(homeWorldId)
     }
 
     /**

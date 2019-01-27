@@ -1,5 +1,6 @@
 package com.zecdev.starwarspeople.controller
 import com.zecdev.starwarspeople.model.Character
+import com.zecdev.starwarspeople.model.HomeWorld
 import com.zecdev.starwarspeople.model.ModelType
 import com.zecdev.starwarspeople.model.ParserUtils
 import java.lang.Error
@@ -14,6 +15,7 @@ class MainController constructor(): HttpRequestCallback {
 
     private var charactersCallback : MainControllerCharactersCallback?
     private var vehiclesCallback : MainControllerVehiclesCallback?
+    private var homeWorldCallback : MainControllerHomeWorldCallback?
 
     private var characterStore: CharacterStore
 
@@ -21,6 +23,7 @@ class MainController constructor(): HttpRequestCallback {
         this.httpRequest = HttpRequest(this)
         this.charactersCallback = null
         this.vehiclesCallback = null
+        this.homeWorldCallback = null
         this.characterStore = CharacterStore()
     }
 
@@ -88,6 +91,19 @@ class MainController constructor(): HttpRequestCallback {
         }
 
         /**
+         * This function it's used to define the callback.
+         * The class that implement this callback and call
+         * this function will be notified about the events
+         * declared in the MainControllerHomeWorldCallback.
+         * @param callback The callback that will receive the
+         * events.
+         */
+        fun setHomeWorldDelegate(callback : MainControllerHomeWorldCallback)
+        {
+            instance.homeWorldCallback = callback
+        }
+
+        /**
          * Return a list of characters available in memory.
          * @return the list of characters.
          */
@@ -100,6 +116,34 @@ class MainController constructor(): HttpRequestCallback {
 
             return arrayCopy
         }
+
+        /**
+         * Return the homeWorld with that URL or
+         * request the homeWorld to server, in that case the
+         * homeworld will be received by the onHomeWorldLoad event.
+         */
+        fun getHomeWorld(url: String): HomeWorld? {
+            val id = ParserUtils.getIdByUrl(url)
+            if(id != -1){
+                val homeWorld = instance.characterStore.getHomeWorld(id)
+                if(homeWorld == null){
+                    instance.requestHomeWorld(url)
+                }
+                else
+                {
+                    return homeWorld
+                }
+            }
+            return null
+        }
+    }
+
+    /**
+     * Start a request from an HomeWorld.
+     */
+    private fun requestHomeWorld(url: String)
+    {
+        instance.httpRequest.request(url, ModelType.HOMEWORLD);
     }
 
     /**
@@ -207,6 +251,20 @@ class MainController constructor(): HttpRequestCallback {
     }
 
     /**
+     * This function store the data about the homeWorld received
+     * and call the onHomeWorldReceivedEvent.
+     * @param data The data received from the server.
+     */
+    private fun homeWorldDataReceived(data: String)
+    {
+        val homeWorld = this.characterStore.addHomeWorld(data);
+        if(homeWorld == null){
+            return;
+        }
+        homeWorldCallback!!.onHomeWorldLoad(homeWorld)
+    }
+
+    /**
      * @see HttpRequestCallback.onDataReceived
      */
     override fun onDataReceived(data: String, type: ModelType) {
@@ -216,6 +274,7 @@ class MainController constructor(): HttpRequestCallback {
             ModelType.CHARACTERS -> charactersDataReceived(data);
             ModelType.VEHICLES -> vehiclesDataReceived(data);
             ModelType.SPECIES -> speciesDataReceived(data);
+            ModelType.HOMEWORLD -> homeWorldDataReceived(data);
         }
     }
 
@@ -229,6 +288,7 @@ class MainController constructor(): HttpRequestCallback {
             ModelType.CHARACTERS -> this.charactersCallback?.onCharactersFailedLoading(error)
             ModelType.VEHICLES -> this.vehiclesCallback?.onCharacterVehiclesFailedLoading(error)
             ModelType.SPECIES -> this.charactersCallback?.onCharactersFailedLoading(error)
+            ModelType.HOMEWORLD -> this.charactersCallback?.onCharactersFailedLoading(error)
         }
     }
 }

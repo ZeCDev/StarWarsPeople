@@ -5,5 +5,5 @@ package com.zecdev.starwarspeople.model
  * done.
  */
 enum class ModelType {
-    CHARACTERS, VEHICLES, SPECIES
+    CHARACTERS, VEHICLES, SPECIES, HOMEWORLD
 }
